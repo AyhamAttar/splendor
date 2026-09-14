@@ -60,4 +60,11 @@ EXPOSE 4000
 
 # Apply pending migrations, then start the server. `prisma` (a devDependency) is
 # present because this single-stage image keeps the full install.
-CMD ["pnpm", "run", "start:prod"]
+#
+# `exec node` replaces the shell so Node becomes PID 1 and receives SIGTERM
+# directly on redeploy/scale-down. Without exec the signal stops at the shell
+# (or at pnpm) and never reaches Node, so main.ts's enableShutdownHooks() never
+# runs — Prisma/socket connections get cut mid-flight (Postgres then logs
+# "connection reset by peer" / "SSL unexpected eof") and the process is
+# SIGKILLed, surfacing as "[ELIFECYCLE] Command failed."
+CMD ["sh", "-c", "pnpm exec prisma migrate deploy && exec node dist/main.js"]
