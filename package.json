@@ -1,0 +1,20 @@
+{
+  "name": "splendor",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "pnpm@11.5.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r lint",
+    "engine:build": "pnpm --filter @splendor/engine build",
+    "dev": "pnpm --parallel --filter @splendor/backend --filter @splendor/frontend dev",
+    "dev:backend": "pnpm --filter @splendor/backend dev",
+    "dev:frontend": "pnpm --filter @splendor/frontend dev",
+    "sandbox": "pnpm --filter @splendor/engine build && pnpm --filter @splendor/frontend dev"
+  }
+}

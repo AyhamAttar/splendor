@@ -1,0 +1,7 @@
+.next
+node_modules
+pnpm-lock.yaml
+# Static/generated assets (noble art, generated card SVGs).
+public
+# Engine mirror — kept byte-identical to backend/src/engine; never reformat.
+src/engine

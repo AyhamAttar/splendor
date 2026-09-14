@@ -1,0 +1,16 @@
+packages:
+  - "packages/*"
+  - "backend"
+  - "frontend"
+
+# pnpm 11 requires explicit approval to run dependency build scripts.
+# Consolidated from the former per-project pnpm-workspace.yaml files.
+allowBuilds:
+  "@prisma/client": true
+  "@prisma/engines": true
+  "@swc/core": true
+  "@tailwindcss/oxide": true
+  esbuild: true
+  prisma: true
+  sharp: true
+  unrs-resolver: true

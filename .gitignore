@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+.next/
+out/
+build/
+*.tsbuildinfo
+
+# Prisma generated client (regenerated on install/build)
+packages/**/generated/
+backend/generated/
+
+# Env — keep .env.example tracked, ignore real secrets
+.env
+.env.local
+.env.*.local
+
+# Logs & coverage
+*.log
+coverage/
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db

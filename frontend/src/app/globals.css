@@ -1,0 +1,616 @@
+@import "tailwindcss";
+
+@theme {
+  /* Table + ornate frame palette (from the rulebook art) */
+  --color-navy-950: #081226;
+  --color-navy-900: #0c1b3a;
+  --color-navy-800: #142a52;
+  --color-navy-700: #1c3866;
+  --color-gold-300: #ecd9a0;
+  --color-gold-400: #d9b45b;
+  --color-gold-500: #c19a3f;
+  --color-gold-700: #8a6d2a;
+  --color-parchment-50: #faf3e3;
+  --color-parchment-100: #f1e6cc;
+  --color-parchment-300: #dcc9a3;
+
+  /* Gem colors */
+  --color-gem-white: #f4f1ea;
+  --color-gem-blue: #1f5fbf;
+  --color-gem-green: #1c8a4e;
+  --color-gem-red: #c22f2f;
+  --color-gem-black: #232128;
+  --color-gem-gold: #e3b341;
+
+  --font-display:
+    var(--font-thmanyah-serif), Georgia, "Iowan Old Style", "Palatino Linotype",
+    "Times New Roman", serif;
+  --radius-card: 0.7rem;
+
+  /* Real depth: an offset ambient plus a soft cast, warmed by the table.
+     raise-1 pieces on the felt, raise-2 the active piece, raise-3 dialogs. */
+  --shadow-raise-1:
+    0 1px 2px rgba(3, 7, 18, 0.45), 0 4px 10px rgba(3, 7, 18, 0.3);
+  --shadow-raise-2:
+    0 2px 4px rgba(3, 7, 18, 0.45), 0 10px 24px rgba(3, 7, 18, 0.4);
+  --shadow-raise-3:
+    0 6px 14px rgba(3, 7, 18, 0.5), 0 26px 60px rgba(3, 7, 18, 0.55);
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* The ornate gold double-line frame used by cards, panels and nobles. */
+@utility gold-frame {
+  border: 1px solid var(--color-gold-700);
+  box-shadow:
+    inset 0 0 0 2px var(--color-gold-500),
+    inset 0 0 0 5px color-mix(in srgb, var(--color-gold-500) 28%, transparent);
+  border-radius: var(--radius-card);
+}
+
+/* A softer single gold hairline for smaller elements. */
+@utility gold-hairline {
+  border: 1px solid color-mix(in srgb, var(--color-gold-500) 65%, transparent);
+}
+
+/* Development-card surfaces (promoted from DevCard/PlayerPanel inline styles). */
+@utility card-face {
+  background: linear-gradient(
+    160deg,
+    var(--color-parchment-50),
+    var(--color-parchment-300)
+  );
+}
+/* --tier-a/--tier-b tint the back per level (set inline in DevCard); the
+   default is the level-3 navy. Level 1 = green, level 2 = gold, level 3 = blue. */
+@utility card-back {
+  background:
+    repeating-linear-gradient(
+      45deg,
+      transparent 0 10px,
+      rgba(217, 180, 91, 0.09) 10px 20px
+    ),
+    linear-gradient(
+      160deg,
+      var(--tier-a, var(--color-navy-700)),
+      var(--tier-b, var(--color-navy-950))
+    );
+}
+/* Reserved minis intentionally use a finer stripe (8/16px, alpha .1). */
+@utility card-back-mini {
+  background:
+    repeating-linear-gradient(
+      45deg,
+      transparent 0 8px,
+      rgba(217, 180, 91, 0.1) 8px 16px
+    ),
+    linear-gradient(
+      160deg,
+      var(--tier-a, var(--color-navy-700)),
+      var(--tier-b, var(--color-navy-950))
+    );
+}
+
+/* The shared board: a felt playfield inlaid (recessed) into the table, so the
+   depth reads table -> board -> pieces (cards/tokens/nobles raise onto it). */
+@utility playfield {
+  background:
+    radial-gradient(
+      120% 100% at 50% 0%,
+      rgba(20, 42, 82, 0.4),
+      transparent 72%
+    ),
+    color-mix(in srgb, var(--color-navy-950) 42%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-gold-700) 42%, transparent);
+  border-radius: 1rem;
+  box-shadow:
+    inset 0 2px 12px rgba(3, 7, 18, 0.55),
+    inset 0 0 0 1px rgba(3, 7, 18, 0.28);
+}
+
+/* An empty market setting: a recessed slot awaiting its card. */
+@utility card-empty {
+  border: 1px solid color-mix(in srgb, var(--color-gold-700) 34%, transparent);
+  box-shadow: inset 0 2px 8px rgba(3, 7, 18, 0.5);
+  border-radius: var(--radius-card);
+}
+
+/* A struck-coin seal for a player's prestige count. */
+@utility prestige-seal {
+  background:
+    radial-gradient(
+      120% 120% at 32% 26%,
+      rgba(255, 255, 255, 0.12),
+      transparent 55%
+    ),
+    color-mix(in srgb, var(--color-navy-950) 60%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-gold-500) 60%, transparent);
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.45),
+    inset 0 0 0 1px rgba(217, 180, 91, 0.15);
+}
+
+/* Engraved gilt for titular serif on dark: a white top glint, a gold candle
+   bloom, and a dark drop — the Title-tier cousin of the hero wordmark shadow. */
+@utility text-engrave-gold {
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.12),
+    0 2px 14px rgba(217, 180, 91, 0.22),
+    0 2px 2px rgba(3, 7, 18, 0.55);
+}
+
+/* A shallow emboss for dark numerals struck into parchment (card points,
+   noble/prestige badges): a light top lip over a faint navy seat. */
+@utility text-emboss-parchment {
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.6),
+    0 1px 1px rgba(12, 27, 58, 0.22);
+}
+
+/* Small-caps ornament label: section headings, panel meta. Tinted from gold,
+   never gray, so it reads as engraving on the table. */
+@utility ornament-label {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--color-gold-300) 78%, transparent);
+}
+
+/* ── RTL / Arabic overrides ──────────────────────────────────── */
+
+/* Thmanyah is an Arabic-native family, so body (Sans) and display (Serif)
+   already carry Arabic in RTL mode — no separate Arabic face is swapped in.
+   letter-spacing breaks Arabic cursive joining; text-transform has no
+   meaning in Arabic (no letter case). Both must be neutralised for
+   .ornament-label and .font-display which set them globally. */
+[dir="rtl"] .ornament-label {
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+[dir="rtl"] .font-display {
+  letter-spacing: normal;
+}
+
+/* Logical margin utility: flip rtl-specific icon flip helper */
+.icon-dir-flip {
+  display: inline-block;
+}
+[dir="rtl"] .icon-dir-flip {
+  transform: scaleX(-1);
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+/* The velvet base and its woven micro-texture scroll with the table. */
+body {
+  min-height: 100vh;
+  background-color: var(--color-navy-950);
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.014) 0 1px,
+      transparent 1px 3px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(0, 0, 0, 0.05) 0 1px,
+      transparent 1px 3px
+    ),
+    linear-gradient(180deg, var(--color-navy-900), var(--color-navy-950));
+  color: var(--color-parchment-50);
+  font-family:
+    var(--font-thmanyah-sans),
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
+}
+
+/* A stable pool of candlelight over the play area, deepening to a vignette at
+   the edges. Fixed so the light stays put as the board scrolls beneath it. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(
+      1100px 720px at 50% 20%,
+      color-mix(in srgb, var(--color-navy-700) 82%, #3f62a8),
+      transparent 60%
+    ),
+    radial-gradient(
+      760px 420px at 50% -6%,
+      color-mix(in srgb, var(--color-gold-500) 15%, transparent),
+      transparent 72%
+    ),
+    radial-gradient(
+      1500px 1200px at 50% 116%,
+      transparent 42%,
+      rgba(3, 6, 16, 0.7)
+    );
+}
+
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: 0.02em;
+}
+
+/* --- Browser surfaces: the parts we did not draw still carry the world. --- */
+::selection {
+  background: color-mix(in srgb, var(--color-gold-400) 88%, transparent);
+  color: var(--color-navy-950);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-gold-400);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+input,
+textarea {
+  caret-color: var(--color-gold-400);
+}
+
+/* Every interactive element shows the hand cursor; disabled shows not-allowed.
+   (Tailwind Preflight leaves buttons on the default arrow.) */
+button:not(:disabled),
+[role="button"],
+a[href],
+summary {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-gold-700) transparent;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: color-mix(in srgb, var(--color-navy-950) 55%, transparent);
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    var(--color-gold-700),
+    color-mix(in srgb, var(--color-gold-500) 80%, var(--color-gold-700))
+  );
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gold-500);
+}
+
+/* --- One authored moment: the table is set. Pieces settle onto the felt in
+   an orchestrated rise; per-element delay is set inline for the stagger. --- */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@utility rise-in {
+  animation: rise-in 0.55s var(--ease-out-expo) both;
+}
+
+/* The modal scrim: candlelight pools behind the dialog, deepening to the dark
+   table at the edges, so a raised panel reads as lit from above rather than
+   floating on flat black. Fades in so the table dims into focus. */
+@utility modal-scrim {
+  background:
+    radial-gradient(
+      130% 95% at 50% 42%,
+      color-mix(in srgb, var(--color-navy-700) 52%, transparent),
+      transparent 68%
+    ),
+    color-mix(in srgb, var(--color-navy-950) 74%, transparent);
+}
+@keyframes scrim-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@utility scrim-in {
+  animation: scrim-in 0.3s ease-out both;
+}
+
+/* A slow, low breath of candlelight on the piece in play. */
+@keyframes turn-breath {
+  0%,
+  100% {
+    box-shadow:
+      var(--shadow-raise-2),
+      0 0 0 1px color-mix(in srgb, var(--color-gold-400) 45%, transparent),
+      0 0 18px rgba(217, 180, 91, 0.18);
+  }
+  50% {
+    box-shadow:
+      var(--shadow-raise-2),
+      0 0 0 1px color-mix(in srgb, var(--color-gold-400) 70%, transparent),
+      0 0 30px rgba(217, 180, 91, 0.34);
+  }
+}
+@utility turn-breath {
+  animation: turn-breath 4.2s ease-in-out infinite;
+}
+
+/* --- Reward flourishes: a bought card or an attracted noble pops in with a
+   gold burst and a ring of sparks, then bows out. --- */
+@keyframes celebrate-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.6) translateY(24px);
+  }
+  14% {
+    opacity: 1;
+    transform: scale(1.08) translateY(0);
+  }
+  26% {
+    transform: scale(1);
+  }
+  74% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.06) translateY(-18px);
+  }
+}
+@utility celebrate-pop {
+  animation: celebrate-pop 2s var(--ease-out-expo) both;
+}
+
+/* Blurred scrim that fades in with the card pop and clears as it bows out,
+   keeping the reward text legible over a busy board. */
+@keyframes celebrate-scrim {
+  0% {
+    opacity: 0;
+  }
+  14% {
+    opacity: 1;
+  }
+  74% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@utility celebrate-scrim {
+  animation: celebrate-scrim 2s var(--ease-out-expo) both;
+}
+
+@keyframes celebrate-burst {
+  0% {
+    opacity: 0.75;
+    transform: scale(0.5);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.4);
+  }
+}
+@utility celebrate-burst {
+  animation: celebrate-burst 0.9s ease-out both;
+}
+
+@keyframes celebrate-spark {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-64px) scale(0.4);
+  }
+}
+@utility celebrate-spark {
+  animation: celebrate-spark 0.9s var(--ease-out-expo) both;
+}
+
+/* --- Tiny living glow on gem tokens: gently breathes the drop-shadow blur.
+   Color is held constant in --glow-color so only the blur radius interpolates,
+   keeping the pulse smooth. --- */
+@keyframes token-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 2px var(--glow-color))
+      drop-shadow(0 0 4px var(--glow-color));
+  }
+  50% {
+    filter: drop-shadow(0 0 5px var(--glow-color))
+      drop-shadow(0 0 9px var(--glow-color));
+  }
+}
+@utility token-glow {
+  --glow-color: rgba(227, 179, 65, 0.65);
+  animation: token-glow 3s ease-in-out infinite;
+}
+@keyframes token-glow-dim {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 1px var(--glow-color))
+      drop-shadow(0 0 2px var(--glow-color));
+  }
+  50% {
+    filter: drop-shadow(0 0 2px var(--glow-color))
+      drop-shadow(0 0 4px var(--glow-color));
+  }
+}
+@utility token-glow-dim {
+  --glow-color: rgba(227, 179, 65, 0.4);
+  animation: token-glow-dim 3.4s ease-in-out infinite;
+}
+
+/* --- A noble joining is the grandest reward: a slow, oversized flourish that
+   holds on screen for a beat before bowing out (>= 3s). --- */
+@keyframes celebrate-noble {
+  0% {
+    opacity: 0;
+    transform: scale(0.4) rotate(-8deg);
+  }
+  10% {
+    opacity: 1;
+    transform: scale(1.14) rotate(3deg);
+  }
+  18% {
+    transform: scale(1) rotate(-2deg);
+  }
+  26% {
+    transform: scale(1.06) rotate(0deg);
+  }
+  84% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.12) translateY(-24px);
+  }
+}
+@utility celebrate-noble {
+  animation: celebrate-noble 3.4s var(--ease-out-expo) both;
+}
+
+@keyframes celebrate-noble-tile {
+  0% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 6px rgba(217, 180, 91, 0.4));
+  }
+  50% {
+    transform: scale(1.7);
+    filter: drop-shadow(0 0 22px rgba(217, 180, 91, 0.85));
+  }
+  100% {
+    transform: scale(1.62);
+    filter: drop-shadow(0 0 14px rgba(217, 180, 91, 0.6));
+  }
+}
+@utility celebrate-noble-tile {
+  animation: celebrate-noble-tile 3.4s var(--ease-out-expo) both;
+}
+
+@keyframes celebrate-noble-ring {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  35% {
+    opacity: 0.85;
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.6);
+  }
+}
+@utility celebrate-noble-ring {
+  animation: celebrate-noble-ring 2s ease-out both;
+}
+
+/* --- The noble reward line: a gold gradient with a bright band that sweeps
+   across the text, giving the prestige count a struck-metal shimmer. --- */
+@keyframes noble-reward-shimmer {
+  0% {
+    background-position: 200% center;
+  }
+  100% {
+    background-position: -200% center;
+  }
+}
+.noble-reward-shimmer {
+  background-image: linear-gradient(
+    100deg,
+    var(--color-gold-500) 0%,
+    var(--color-gold-300) 38%,
+    #fff4d6 50%,
+    var(--color-gold-300) 62%,
+    var(--color-gold-500) 100%
+  );
+  background-size: 200% auto;
+  animation: noble-reward-shimmer 2.6s linear infinite;
+}
+
+/* --- Branded loader: the treasure medallion breathes with a gold glow while a
+   thin arc sweeps around it. The artwork itself stays upright; only the ring
+   spins, so the scene never turns upside-down. --- */
+@keyframes brand-loader-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 8px rgba(217, 180, 91, 0.3));
+  }
+  50% {
+    transform: scale(1.04);
+    filter: drop-shadow(0 0 22px rgba(217, 180, 91, 0.6));
+  }
+}
+@keyframes brand-loader-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.brand-loader-medallion {
+  animation: brand-loader-breathe 2.8s ease-in-out infinite;
+  will-change: transform, filter;
+}
+.brand-loader-ring {
+  border-radius: 9999px;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0 62%,
+    color-mix(in srgb, var(--color-gold-300) 30%, transparent) 74%,
+    var(--color-gold-300) 88%,
+    transparent 100%
+  );
+  -webkit-mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 5px),
+    #000 calc(100% - 4px)
+  );
+  mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 5px),
+    #000 calc(100% - 4px)
+  );
+  animation: brand-loader-spin 1.5s linear infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

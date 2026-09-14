@@ -1,0 +1,28 @@
+# Local development dependencies.
+#
+# Phase 0 provides PostgreSQL for durable game persistence. Phase 6 expands this
+# file with the frontend/backend app services and Redis. Start it with:
+#   docker compose up -d
+# then point the backend at it via backend/.env (see backend/.env.example).
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: splendor-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: splendor
+      POSTGRES_PASSWORD: splendor
+      POSTGRES_DB: splendor
+    ports:
+      - "5432:5432"
+    volumes:
+      - splendor-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U splendor -d splendor"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  splendor-pgdata:

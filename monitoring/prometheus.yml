@@ -1,0 +1,24 @@
+# Minimal Prometheus scrape config for the Splendor backend.
+#
+# Local use:
+#   docker run --rm -p 9090:9090 \
+#     -v "$PWD/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml" \
+#     prom/prometheus
+# then open http://localhost:9090 and query e.g.
+#   histogram_quantile(0.95, sum(rate(splendor_turn_duration_seconds_bucket[5m])) by (le))
+#
+# If METRICS_TOKEN is set on the backend, add an Authorization bearer token
+# under the job's `authorization:` block.
+
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: splendor
+    metrics_path: /metrics
+    static_configs:
+      # Adjust to your host/container. In docker-compose use `backend:4000`.
+      - targets: ["host.docker.internal:4000"]
+    # authorization:
+    #   type: Bearer
+    #   credentials: "<METRICS_TOKEN>"

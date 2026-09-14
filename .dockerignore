@@ -1,0 +1,12 @@
+# Never copy host build output or secrets into the image — everything is
+# installed/built fresh inside the container.
+**/node_modules
+**/dist
+**/.next
+**/.env
+**/.env.*
+!**/.env.example
+.git
+.github
+**/coverage
+**/*.log

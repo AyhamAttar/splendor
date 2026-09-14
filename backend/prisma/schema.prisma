@@ -1,0 +1,262 @@
+// Splendor persistence schema.
+//
+// Phase 0 introduces durable storage for games (previously in-memory) plus the
+// identity/relationship tables that later phases build on. The authoritative
+// engine GameState (see @splendor/engine `GameState`) is stored verbatim as a
+// JSON snapshot on `Game.state`; the append-only `Move` log records each turn
+// command so a game can be replayed from `seed` + moves.
+//
+// Later phases flesh out the identity/social tables in place (migrations stay
+// additive): Phase 1 auth (User/GuestIdentity/RefreshToken), Phase 3 lobby
+// (Room/RoomMember), Phase 4 social (User.handle/avatar, Friendship, MatchResult).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --- Identity -----------------------------------------------------------------
+
+/// A registered account. Email/password auth landed in Phase 1. `passwordHash`
+/// is null for accounts that only ever authenticated via OAuth (Phase 1 leaves
+/// OAuth behind a feature flag). `emailVerifiedAt` is set when a verification
+/// flow confirms the address; verification is optional/disabled by default.
+model User {
+  id              String    @id @default(uuid())
+  email           String?   @unique
+  displayName     String?
+  /// Unique public handle (Phase 4) — the discoverable identity used to send
+  /// friend requests. Stored lowercased; `null` until the user claims one.
+  handle          String?   @unique
+  /// Optional avatar image URL (Phase 4). Rendered client-side; validated as an
+  /// http(s) URL on write.
+  avatar          String?
+  passwordHash    String?
+  emailVerifiedAt DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  guest         GuestIdentity?
+  gamePlayers   GamePlayer[]
+  refreshTokens RefreshToken[]
+
+  // Social (Phase 4)
+  friendshipsRequested Friendship[] @relation("FriendshipRequester")
+  friendshipsReceived  Friendship[] @relation("FriendshipAddressee")
+
+  // Lobby (Phase 3)
+  hostedRooms Room[]       @relation("RoomHost")
+  roomMembers RoomMember[]
+}
+
+/// A single issued refresh token, one row per active session/device. The raw
+/// token is never stored — only its SHA-256 hash (`tokenHash`), so a DB leak
+/// can't be replayed. Rotation on `/auth/refresh` marks the presented row
+/// revoked (`revokedAt`) and links the successor via `replacedByHash`; if an
+/// already-revoked token is presented again (theft/replay) the whole user's
+/// token family is revoked.
+model RefreshToken {
+  id             String    @id @default(uuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash      String    @unique
+  expiresAt      DateTime
+  createdAt      DateTime  @default(now())
+  revokedAt      DateTime?
+  replacedByHash String?
+  userAgent      String?
+
+  @@index([userId])
+}
+
+/// A durable per-device identity for guest play. Upgraded to a `User` in Phase 1
+/// (guest keeps their history when they register).
+model GuestIdentity {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String?  @unique
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+  lastSeen  DateTime @default(now())
+
+  gamePlayers GamePlayer[]
+
+  // Lobby (Phase 3) — guests can host and join rooms just like registered users.
+  hostedRooms Room[]       @relation("RoomHostGuest")
+  roomMembers RoomMember[]
+}
+
+// --- Games --------------------------------------------------------------------
+
+enum GameStatus {
+  ACTIVE
+  FINISHED
+}
+
+/// One game. `state` is the authoritative engine GameState snapshot; `turnNumber`
+/// and `status` are denormalized from it for indexing/queries. `sessionToken` is
+/// the legacy single shared token used by local hotseat play. `online` flips to
+/// true for networked games where seats are owned by identities (Phase 2+) and
+/// each player receives a per-viewer redacted state over WebSocket push.
+model Game {
+  id           String     @id
+  seed         Int
+  status       GameStatus @default(ACTIVE)
+  turnNumber   Int        @default(0)
+  state        Json
+  sessionToken String     @unique
+  online       Boolean    @default(false)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  players GamePlayer[]
+  moves   Move[]
+  result  MatchResult?
+
+  // Serves the idle-game sweep (deleteMany where updatedAt < cutoff). A
+  // status-leading composite index is added in a later phase if/when a
+  // status-filtered listing query needs it.
+  @@index([updatedAt])
+}
+
+/// A seat in a game, mapped to the engine's `players[seatIndex]`. `userId`/
+/// `guestId` are null for legacy hotseat seats and populated for online seats
+/// (Phase 2+).
+model GamePlayer {
+  id        String   @id @default(uuid())
+  gameId    String
+  game      Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  seatIndex Int
+  name      String
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  guestId   String?
+  guest     GuestIdentity? @relation(fields: [guestId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+
+  @@unique([gameId, seatIndex])
+  @@index([userId])
+  @@index([guestId])
+}
+
+/// Append-only per-turn log. `turnNumber` is the engine turn number BEFORE the
+/// command was applied (the optimistic-concurrency tag), `command` is the raw
+/// TurnCommand as submitted. Enables replay and match history.
+model Move {
+  id         String   @id @default(uuid())
+  gameId     String
+  game       Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  turnNumber Int
+  seatIndex  Int
+  command    Json
+  createdAt  DateTime @default(now())
+
+  @@unique([gameId, turnNumber])
+  @@index([gameId])
+}
+
+// --- Social & lobby -----------------------------------------------------------
+
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+  BLOCKED
+}
+
+/// A friendship edge between two users (Phase 4). One row per ordered
+/// `(requester, addressee)` pair:
+///  - PENDING  — `requester` asked to befriend `addressee` (awaiting response).
+///  - ACCEPTED — a mutual friendship; direction is now irrelevant, both are friends.
+///  - BLOCKED  — `requester` (the blocker) has blocked `addressee`; the block is
+///    one-directional and hides/severs the relationship both ways at the service
+///    layer. The `@@unique([requesterId, addresseeId])` guarantees a single edge
+///    per direction; the service enforces "at most one relationship per pair"
+///    across directions.
+model Friendship {
+  id          String           @id @default(uuid())
+  requesterId String
+  requester   User             @relation("FriendshipRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  addresseeId String
+  addressee   User             @relation("FriendshipAddressee", fields: [addresseeId], references: [id], onDelete: Cascade)
+  status      FriendshipStatus @default(PENDING)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@unique([requesterId, addresseeId])
+  @@index([addresseeId])
+}
+
+enum RoomStatus {
+  WAITING
+  IN_GAME
+  CLOSED
+}
+
+/// A private lobby joined via a short invite `code`. The host (a user or a
+/// guest) controls seat count and start; members are rows in `RoomMember`.
+/// `gameId` is set when the host starts — the room transitions to IN_GAME and
+/// every member is routed to that online `Game`. Idle/finished rooms are swept
+/// (see RoomSweeper). `status` ∈ { WAITING, IN_GAME, CLOSED }.
+model Room {
+  id         String     @id @default(uuid())
+  code       String     @unique
+  status     RoomStatus @default(WAITING)
+  maxPlayers Int        @default(4)
+  // Host identity: exactly one of hostUserId/hostGuestId is set. Kept alongside
+  // the RoomMember rows so "is the caller the host?" is a cheap comparison.
+  hostUserId  String?
+  host        User?          @relation("RoomHost", fields: [hostUserId], references: [id], onDelete: SetNull)
+  hostGuestId String?
+  hostGuest   GuestIdentity? @relation("RoomHostGuest", fields: [hostGuestId], references: [id], onDelete: SetNull)
+  gameId      String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  members RoomMember[]
+
+  @@index([status])
+  @@index([updatedAt])
+}
+
+/// A seat in a room, owned by a user or a guest identity. `seatIndex` is the
+/// 0-based slot (host is seat 0) and becomes the engine seat when the game
+/// starts. `ready` gates a non-host member; the host starts the game.
+model RoomMember {
+  id        String         @id @default(uuid())
+  roomId    String
+  room      Room           @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  seatIndex Int
+  name      String
+  userId    String?
+  user      User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  guestId   String?
+  guest     GuestIdentity? @relation(fields: [guestId], references: [id], onDelete: Cascade)
+  ready     Boolean        @default(false)
+  isHost    Boolean        @default(false)
+  createdAt DateTime       @default(now())
+
+  @@unique([roomId, seatIndex])
+  @@index([roomId])
+  @@index([userId])
+  @@index([guestId])
+}
+
+/// Immutable summary written (atomically) when a game finishes, for match
+/// history and profile stats (Phase 4). `winners` is `number[]` (winning seat
+/// indices; length > 1 on a tie). `summary` is a `MatchSummary` object (see
+/// backend `match-summary.ts`): seed, total turns, duration, and a per-seat
+/// breakdown (name, owning userId/guestId, final prestige, cards, nobles, gem
+/// bonuses, purchased card ids, won flag). A user's match history is every
+/// MatchResult whose game has a GamePlayer owned by that user.
+model MatchResult {
+  id         String   @id @default(uuid())
+  gameId     String   @unique
+  game       Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  winners    Json
+  summary    Json
+  finishedAt DateTime @default(now())
+}

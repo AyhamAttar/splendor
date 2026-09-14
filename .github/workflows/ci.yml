@@ -1,0 +1,115 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-test:
+    name: Build, typecheck & test
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: splendor
+          POSTGRES_PASSWORD: splendor
+          POSTGRES_DB: splendor
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U splendor -d splendor"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+
+    env:
+      DATABASE_URL: postgresql://splendor:splendor@localhost:5432/splendor?schema=public
+      # Test-only secrets — never used outside CI.
+      JWT_ACCESS_SECRET: ci-access-secret-ci-access-secret
+      GUEST_TOKEN_SECRET: ci-guest-secret-ci-guest-secret
+      CORS_ORIGINS: http://localhost:3000
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.5.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm --filter @splendor/backend prisma:generate
+
+      - name: Build (engine → backend → frontend, topological)
+        run: pnpm -r build
+
+      - name: Typecheck
+        run: pnpm -r typecheck
+
+      # Non-blocking: eslint-config-next 16 flags some pre-existing React-hooks
+      # patterns in the game UI. Tracked separately; kept informational so it
+      # does not mask Phase 5 regressions in the gating steps below.
+      - name: Lint
+        run: pnpm -r lint
+        continue-on-error: true
+
+      - name: Unit tests + coverage (engine + backend)
+        run: |
+          pnpm --filter @splendor/engine test
+          pnpm --filter @splendor/backend test:cov
+
+      - name: Apply migrations
+        run: pnpm --filter @splendor/backend prisma:deploy
+
+      - name: E2E tests (REST + WebSocket + security, real DB)
+        run: pnpm --filter @splendor/backend test:e2e
+
+  security-scan:
+    name: Dependency & filesystem vulnerability scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.5.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Informational: surfaces advisories without blocking on unfixable
+      # transitive ones. The hard gate is Trivy (criticals) below.
+      - name: pnpm audit (production, high+)
+        run: pnpm audit --prod --audit-level=high
+        continue-on-error: true
+
+      - name: Trivy filesystem scan (gate on CRITICAL)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          severity: CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"
+      # NOTE: container image scanning is added alongside the Dockerfiles in
+      # Phase 6 (Task 13) — scan the built backend/frontend images before deploy.

@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-08T00:00:00.000Z",
+  "title": "Design System: Splendor (working title)",
+  "extensions": {
+    "colorMeta": {
+      "gold-300": { "role": "primary", "displayName": "Gilt Highlight", "canonical": "#ecd9a0", "tonalRamp": ["#2c2410", "#4a3c1c", "#6b5626", "#8a6d2a", "#a98a3a", "#c19a3f", "#d9b45b", "#ecd9a0"] },
+      "gold-400": { "role": "primary", "displayName": "Lamp Gold", "canonical": "#d9b45b", "tonalRamp": ["#2c2410", "#4a3c1c", "#6b5626", "#8a6d2a", "#a98a3a", "#c19a3f", "#d9b45b", "#ecd9a0"] },
+      "gold-500": { "role": "primary", "displayName": "Frame Gold", "canonical": "#c19a3f", "tonalRamp": ["#2c2410", "#4a3c1c", "#6b5626", "#8a6d2a", "#a98a3a", "#c19a3f", "#d9b45b", "#ecd9a0"] },
+      "gold-700": { "role": "primary", "displayName": "Shadow Gold", "canonical": "#8a6d2a", "tonalRamp": ["#2c2410", "#4a3c1c", "#6b5626", "#8a6d2a", "#a98a3a", "#c19a3f", "#d9b45b", "#ecd9a0"] },
+      "navy-950": { "role": "secondary", "displayName": "Velvet Black-Navy", "canonical": "#081226", "tonalRamp": ["#081226", "#0c1b3a", "#142a52", "#1c3866", "#274a86", "#3f62a8", "#6a86c4", "#a9bce0"] },
+      "navy-900": { "role": "secondary", "displayName": "Deep Navy", "canonical": "#0c1b3a", "tonalRamp": ["#081226", "#0c1b3a", "#142a52", "#1c3866", "#274a86", "#3f62a8", "#6a86c4", "#a9bce0"] },
+      "navy-800": { "role": "secondary", "displayName": "Lit Navy", "canonical": "#142a52", "tonalRamp": ["#081226", "#0c1b3a", "#142a52", "#1c3866", "#274a86", "#3f62a8", "#6a86c4", "#a9bce0"] },
+      "navy-700": { "role": "secondary", "displayName": "Candlelit Navy", "canonical": "#1c3866", "tonalRamp": ["#081226", "#0c1b3a", "#142a52", "#1c3866", "#274a86", "#3f62a8", "#6a86c4", "#a9bce0"] },
+      "parchment-50": { "role": "tertiary", "displayName": "Fresh Parchment", "canonical": "#faf3e3", "tonalRamp": ["#4a3f28", "#6b5c3c", "#8c7a52", "#ad9a70", "#c9b892", "#dcc9a3", "#f1e6cc", "#faf3e3"] },
+      "parchment-100": { "role": "tertiary", "displayName": "Aged Parchment", "canonical": "#f1e6cc", "tonalRamp": ["#4a3f28", "#6b5c3c", "#8c7a52", "#ad9a70", "#c9b892", "#dcc9a3", "#f1e6cc", "#faf3e3"] },
+      "parchment-300": { "role": "tertiary", "displayName": "Worn Parchment", "canonical": "#dcc9a3", "tonalRamp": ["#4a3f28", "#6b5c3c", "#8c7a52", "#ad9a70", "#c9b892", "#dcc9a3", "#f1e6cc", "#faf3e3"] },
+      "gem-white": { "role": "tertiary", "displayName": "Diamond", "canonical": "#f4f1ea", "tonalRamp": ["#3a382f", "#565244", "#726d5a", "#8f8a74", "#b0ab96", "#cfcbba", "#e6e2d6", "#f4f1ea"] },
+      "gem-blue": { "role": "tertiary", "displayName": "Sapphire", "canonical": "#1f5fbf", "tonalRamp": ["#0a1f40", "#123163", "#194589", "#1f5fbf", "#3d79d0", "#6a97dd", "#9bbae9", "#cdddf4"] },
+      "gem-green": { "role": "tertiary", "displayName": "Emerald", "canonical": "#1c8a4e", "tonalRamp": ["#0a2e1a", "#0f4728", "#166638", "#1c8a4e", "#2fae67", "#5cc389", "#8fd7ac", "#c3ebd4"] },
+      "gem-red": { "role": "tertiary", "displayName": "Ruby", "canonical": "#c22f2f", "tonalRamp": ["#3f0f0f", "#631818", "#891f1f", "#c22f2f", "#d55555", "#e28080", "#eeabab", "#f7d6d6"] },
+      "gem-black": { "role": "tertiary", "displayName": "Onyx", "canonical": "#232128", "tonalRamp": ["#0d0c10", "#161519", "#1f1d23", "#232128", "#3a3742", "#57535f", "#8a8593", "#c4c1c9"] },
+      "gem-gold": { "role": "tertiary", "displayName": "Gem Gold", "canonical": "#e3b341", "tonalRamp": ["#3a2c0d", "#5c471a", "#856826", "#a98a3a", "#c99f38", "#e3b341", "#eecb7c", "#f7e5b8"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display / Wordmark", "purpose": "Ceremonial Georgia serif for the wordmark and hero titles; hero scale wears the three-layer engraved text-shadow." },
+      "title": { "displayName": "Title", "purpose": "Georgia serif for prestige numbers, modal titles, and 'Game over'." },
+      "body": { "displayName": "Body", "purpose": "System sans for running gameplay text, instructions, and log lines." },
+      "label": { "displayName": "Ornament Label", "purpose": "Engraved small-caps Georgia (letter-spacing 0.22em, gold-300) for section labels and panel meta." }
+    },
+    "shadows": [
+      { "name": "raise-1", "value": "0 1px 2px rgba(3,7,18,0.45), 0 4px 10px rgba(3,7,18,0.3)", "purpose": "Pieces resting on the felt: dev cards, card backs, noble tiles, inactive panels, log, deck badges." },
+      { "name": "raise-2", "value": "0 2px 4px rgba(3,7,18,0.45), 0 10px 24px rgba(3,7,18,0.4)", "purpose": "The lifted / in-play piece: hover-lift target for cards and nobles, resume card, primary CTA, base of the active-player breath." },
+      { "name": "raise-3", "value": "0 6px 14px rgba(3,7,18,0.5), 0 26px 60px rgba(3,7,18,0.55)", "purpose": "Surfaces floating above the table: dialogs/modals, the lobby form card, and the sticky ActionBar." },
+      { "name": "gold-frame-inset", "value": "inset 0 0 0 2px #c19a3f, inset 0 0 0 5px color-mix(in srgb, #c19a3f 28%, transparent)", "purpose": "The ornate gold double-line frame's inner rule + soft outer wash, paired with a 1px gold-700 outer border." },
+      { "name": "token-dome", "value": "inset 0 0 0 1px rgba(0,0,0,0.45), inset 0 -3px 6px rgba(0,0,0,0.3), inset 0 2px 4px rgba(255,255,255,0.22), 0 2px 6px rgba(3,7,18,0.55)", "purpose": "The domed cut-gem look on TokenChip: dark bottom-inset + light top-inset + rim + cast shadow." }
+    ],
+    "motion": [
+      { "name": "ease-out-expo", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "The single easing curve: rise-in settle, card/token hover transitions." },
+      { "name": "rise-in", "value": "rise-in 0.55s cubic-bezier(0.16,1,0.3,1) both — from { opacity:0; translateY(12px) scale(0.985) } to { opacity:1; none }", "purpose": "The one authored moment: pieces settle onto the felt on mount, staggered by inline per-element animationDelay (0 / 80 / 90 / 140 / 180ms)." },
+      { "name": "turn-breath", "value": "turn-breath 4.2s ease-in-out infinite — raise-2 plus a gold-400 hairline and 18px→30px warm glow, pulsing at 50%", "purpose": "A slow candlelit breath on the active player's panel — the only looping motion." },
+      { "name": "reduced-motion-guard", "value": "@media (prefers-reduced-motion: reduce) { animation-duration:0.001ms; animation-iteration-count:1; transition-duration:0.001ms; scroll-behavior:auto }", "purpose": "Neutralizes rise-in, turn-breath, and all transitions for motion-sensitive users." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Solid gold action button; the default confirm/commit control.",
+      "html": "<button class=\"ds-btn-primary\">Take gems</button>",
+      "css": ".ds-btn-primary { background: #c19a3f; color: #081226; font-weight: 600; font-size: 0.875rem; padding: 0.375rem 1rem; border: none; border-radius: 0.25rem; cursor: pointer; transition: background 0.15s cubic-bezier(0.16,1,0.3,1); } .ds-btn-primary:hover { background: #d9b45b; } .ds-btn-primary:focus-visible { outline: 2px solid #d9b45b; outline-offset: 2px; } .ds-btn-primary:disabled { opacity: 0.4; cursor: default; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Low-emphasis underlined text action (Clear, Discard).",
+      "html": "<button class=\"ds-btn-ghost\">Clear</button>",
+      "css": ".ds-btn-ghost { background: none; border: none; color: rgba(220,201,163,0.7); font-size: 0.875rem; text-decoration: underline; text-underline-offset: 2px; padding: 0.375rem 0.75rem; cursor: pointer; transition: color 0.15s; } .ds-btn-ghost:hover { color: #f1e6cc; } .ds-btn-ghost:disabled { opacity: 0.4; }"
+    },
+    {
+      "name": "Full-Width CTA (minted)",
+      "kind": "button",
+      "refersTo": "cta-primary",
+      "description": "The hero call to action (lobby 'Start game') — struck gold with a top sheen and press-in.",
+      "html": "<button class=\"ds-cta\"><span class=\"ds-cta-sheen\"></span><span class=\"ds-cta-label\">Start game</span></button>",
+      "css": ".ds-cta { position: relative; width: 100%; overflow: hidden; background: #c19a3f; color: #081226; font-family: Georgia, 'Palatino Linotype', serif; font-size: 1.125rem; font-weight: 600; letter-spacing: 0.02em; padding: 0.75rem 1rem; border: none; border-radius: 0.5rem; box-shadow: 0 2px 4px rgba(3,7,18,0.45), 0 10px 24px rgba(3,7,18,0.4); cursor: pointer; transition: background 0.15s, transform 0.1s; } .ds-cta:hover { background: #d9b45b; } .ds-cta:active { transform: translateY(1px); } .ds-cta-sheen { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to bottom, rgba(255,255,255,0.25), transparent); } .ds-cta-label { position: relative; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "Player-name field with a gold hairline and gold focus ring.",
+      "html": "<input class=\"ds-input\" placeholder=\"Player 1 (starts)\" />",
+      "css": ".ds-input { width: 100%; background: rgba(8,18,38,0.5); color: #faf3e3; border: 1px solid rgba(193,154,63,0.65); border-radius: 0.375rem; padding: 0.625rem 0.75rem; caret-color: #d9b45b; transition: background 0.15s; } .ds-input::placeholder { color: rgba(220,201,163,0.6); } .ds-input:focus { outline: none; background: rgba(8,18,38,0.7); box-shadow: 0 0 0 2px rgba(217,180,91,0.8); }"
+    },
+    {
+      "name": "Gem Token (domed disc)",
+      "kind": "chip",
+      "refersTo": "token-chip",
+      "description": "The signature domed cut-gem token — the visual anchor of the whole system. Shown here as a Sapphire; selected/gold tokens get a gold rim.",
+      "html": "<div class=\"ds-token\"><span class=\"ds-token-sheen\"></span><span class=\"ds-token-glint\"></span><span class=\"ds-token-count\">4</span></div>",
+      "css": ".ds-token { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 3.5rem; height: 3.5rem; border-radius: 9999px; color: #fff; font-weight: 600; font-size: 1.125rem; user-select: none; background: #1f5fbf; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.45), inset 0 -3px 6px rgba(0,0,0,0.3), inset 0 2px 4px rgba(255,255,255,0.22), 0 2px 6px rgba(3,7,18,0.55); transition: transform 0.15s cubic-bezier(0.16,1,0.3,1); } .ds-token:hover { transform: scale(1.05); } .ds-token-sheen { position: absolute; inset: 0; border-radius: 9999px; pointer-events: none; background: radial-gradient(circle at 34% 26%, rgba(255,255,255,0.5), transparent 48%); } .ds-token-glint { position: absolute; left: 22%; top: 16%; width: 26%; height: 26%; border-radius: 9999px; pointer-events: none; background: radial-gradient(circle, rgba(255,255,255,0.92), transparent 62%); } .ds-token-count { position: relative; }"
+    },
+    {
+      "name": "Development Card",
+      "kind": "card",
+      "refersTo": "card-face",
+      "description": "A gilt-framed parchment development card: points, bonus pip, cost, with hover-lift and an affordable gold ring.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-card-scrim\"></div><div class=\"ds-card-head\"><span class=\"ds-card-points\">3</span><span class=\"ds-pip\">2</span></div><div class=\"ds-card-cost\"><span class=\"ds-pip ds-pip-blue\">3</span><span class=\"ds-pip ds-pip-red\">2</span></div></div>",
+      "css": ".ds-card { position: relative; display: flex; flex-direction: column; width: 6rem; height: 9rem; padding: 0.5rem; overflow: hidden; text-align: left; color: #142a52; border: 1px solid #8a6d2a; border-radius: 0.7rem; background: linear-gradient(160deg, #faf3e3, #dcc9a3); box-shadow: inset 0 0 0 2px #c19a3f, inset 0 0 0 5px color-mix(in srgb, #c19a3f 28%, transparent), 0 1px 2px rgba(3,7,18,0.45), 0 4px 10px rgba(3,7,18,0.3); cursor: pointer; transition: transform 0.2s cubic-bezier(0.16,1,0.3,1), box-shadow 0.2s cubic-bezier(0.16,1,0.3,1); } .ds-card:hover { transform: translateY(-0.25rem); box-shadow: inset 0 0 0 2px #c19a3f, inset 0 0 0 5px color-mix(in srgb, #c19a3f 28%, transparent), 0 2px 4px rgba(3,7,18,0.45), 0 10px 24px rgba(3,7,18,0.4); } .ds-card-scrim { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to bottom, rgba(250,243,227,0.8), rgba(250,243,227,0.1) 50%, rgba(250,243,227,0.85)); } .ds-card-head { position: relative; z-index: 10; display: flex; align-items: flex-start; justify-content: space-between; } .ds-card-points { font-family: Georgia, serif; font-size: 1.25rem; font-weight: 700; line-height: 1; } .ds-card-cost { position: relative; z-index: 10; margin-top: auto; display: flex; gap: 0.25rem; } .ds-pip { display: inline-flex; align-items: center; justify-content: center; width: 1rem; height: 1rem; border-radius: 9999px; font-size: 9px; font-weight: 700; color: #081226; background: #f4f1ea; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.4); } .ds-pip-blue { background: #1f5fbf; color: #fff; } .ds-pip-red { background: #c22f2f; color: #fff; }"
+    },
+    {
+      "name": "Ornament Section Label",
+      "kind": "custom",
+      "refersTo": "label",
+      "description": "Engraved small-caps section heading flanked by gold hairline rules (e.g. 'New game').",
+      "html": "<div class=\"ds-ornament\"><span class=\"ds-rule ds-rule-l\"></span><h2 class=\"ds-ornament-label\">New game</h2><span class=\"ds-rule ds-rule-r\"></span></div>",
+      "css": ".ds-ornament { display: flex; align-items: center; gap: 0.75rem; } .ds-ornament-label { margin: 0; font-family: Georgia, 'Palatino Linotype', serif; text-transform: uppercase; letter-spacing: 0.22em; font-size: 0.6875rem; font-weight: 600; color: color-mix(in srgb, #ecd9a0 78%, transparent); } .ds-rule { flex: 1; height: 1px; } .ds-rule-l { background: linear-gradient(to right, transparent, rgba(193,154,63,0.4)); } .ds-rule-r { background: linear-gradient(to left, transparent, rgba(193,154,63,0.4)); }"
+    },
+    {
+      "name": "Player Panel (active)",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "The active player's panel — gold double-line frame plus the slow candlelit turn-breath.",
+      "html": "<div class=\"ds-panel\"><div class=\"ds-panel-head\"><span class=\"ds-panel-name\">Player 1<span class=\"ds-turn-chip\">turn</span></span><span class=\"ds-prestige\">7</span></div></div>",
+      "css": ".ds-panel { padding: 0.75rem; border: 1px solid #8a6d2a; border-radius: 0.5rem; background: rgba(20,42,82,0.75); box-shadow: inset 0 0 0 2px #c19a3f, inset 0 0 0 5px color-mix(in srgb, #c19a3f 28%, transparent), var(--_r2), 0 0 0 1px rgba(217,180,91,0.45), 0 0 18px rgba(217,180,91,0.18); --_r2: 0 2px 4px rgba(3,7,18,0.45), 0 10px 24px rgba(3,7,18,0.4); animation: ds-turn-breath 4.2s ease-in-out infinite; } @keyframes ds-turn-breath { 0%,100% { box-shadow: inset 0 0 0 2px #c19a3f, inset 0 0 0 5px color-mix(in srgb, #c19a3f 28%, transparent), 0 2px 4px rgba(3,7,18,0.45), 0 10px 24px rgba(3,7,18,0.4), 0 0 0 1px rgba(217,180,91,0.45), 0 0 18px rgba(217,180,91,0.18); } 50% { box-shadow: inset 0 0 0 2px #c19a3f, inset 0 0 0 5px color-mix(in srgb, #c19a3f 28%, transparent), 0 2px 4px rgba(3,7,18,0.45), 0 10px 24px rgba(3,7,18,0.4), 0 0 0 1px rgba(217,180,91,0.7), 0 0 30px rgba(217,180,91,0.34); } } .ds-panel-head { display: flex; align-items: center; justify-content: space-between; } .ds-panel-name { font-family: Georgia, serif; font-size: 1.125rem; font-weight: 600; color: #faf3e3; } .ds-turn-chip { margin-left: 0.5rem; border-radius: 0.25rem; background: rgba(193,154,63,0.2); padding: 0.125rem 0.375rem; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: #ecd9a0; } .ds-prestige { font-family: Georgia, serif; font-size: 1.5rem; font-weight: 700; color: #ecd9a0; } @media (prefers-reduced-motion: reduce) { .ds-panel { animation-duration: 0.001ms; } }"
+    }
+  ],
+  "narrative": {
+    "northStar": "A Lit Renaissance Jeweler's Table",
+    "overview": "The whole interface is staged as one physical scene: a deep navy velvet tabletop, lit from above by a stable pool of candlelight that deepens to a vignette at the edges, on which gilt-framed cards, domed gem tokens, and parchment tiles are laid out like real pieces. Nothing floats in flat UI space; every surface reads as an object resting on felt, caught in warm light, edged in gold. Depth is achieved with real offset-and-cast shadows warmed toward the table color (never rings or glows), and the palette is disciplined: navy for the ground, a four-step gold for every frame and engraving, warm parchment for anything a hand would pick up, and six saturated jewel colors that carry the game's meaning. The mood is opulent but legible: a rulebook illustration you can actually operate. Type splits cleanly between engraved Georgia serif for anything titular or ceremonial and plain system sans for the running text of play. Iconography is entirely hand-drawn SVG strokes; there are no emoji or icon-font glyphs in the chrome. Motion is rationed to a single authored moment (pieces settling onto the felt in an orchestrated stagger) plus one slow candlelit breath on the active player. The name 'Splendor' and this look are provisional per PRODUCT.md, but as-built this is the coherent system.",
+    "keyCharacteristics": [
+      "A navy velvet ground under a fixed candlelight vignette; pieces sit on it, never in flat space.",
+      "One four-step gold (gold-300 to gold-700) owns every frame, hairline, label, and highlight.",
+      "Three real cast-shadow elevations (raise-1/2/3); halos and ring-glows are banned as depth cues.",
+      "Ornate gold double-line frame for hero surfaces; single gold hairline for smaller/quieter ones.",
+      "Engraved Georgia serif for the ceremonial layer; system sans for running gameplay text.",
+      "Hand-drawn SVG icons only — no emoji, no icon fonts in the chrome.",
+      "One authored motion moment (rise-in stagger) plus a turn-breath on the active player; prefers-reduced-motion fully honored."
+    ],
+    "rules": [
+      { "name": "The Gem-Meaning Rule", "body": "The six jewel colors (Diamond, Sapphire, Emerald, Ruby, Onyx, Gold) appear only on game pieces that mean that color: token chips, cost/bonus pips, gem discs. They are never decorative accents or UI chrome. Gem color always ships with a text label, so color is never the sole signal. gem-red doubles as the only error/destructive color.", "section": "colors" },
+      { "name": "The Gold-Not-Gray Rule", "body": "There is no neutral gray in the system. Every quiet line, label, divider, disabled edge, and caption is a gold or parchment at reduced opacity, so it still reads as engraving or paper on the table rather than as generic UI gray.", "section": "colors" },
+      { "name": "The Engraved-Serif Rule", "body": "Any titular or single-number element (wordmark, prestige, modal title, section label) is set in the Georgia display face, and if it is hero-scale it wears the three-layer engraved text-shadow (white glint + gold bloom + dark drop). Running sentences never use the serif.", "section": "typography" },
+      { "name": "The No-Halo Rule", "body": "Depth and emphasis are expressed only through offset + blur cast shadows warmed to the table color. Symmetric ring-glows and colored halos are banned as depth cues. The two intentional glows are candlelight, not shadow: the active player's turn-breath and the wordmark's engraved bloom.", "section": "elevation" },
+      { "name": "The Lift-On-Hover Rule", "body": "An interactive piece responds to hover by rising (hover:-translate-y-1) and stepping from raise-1 to raise-2. Buttons press in on active:translate-y-px. Height change, not color change, is the primary hover signal.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do frame every hero game object (cards, nobles, active panel, modal) with gold-frame and drop quieter surfaces to gold-hairline. The two-tier gold border is the visual identity.",
+      "Do convey depth only with the three warm cast-shadow tiers — raise-1 for pieces on the felt, raise-2 for the lifted/active piece, raise-3 for dialogs and the sticky ActionBar — and make hover lift the piece a step.",
+      "Do set anything titular or numeric in the Georgia --font-display face, and give hero-scale type the three-layer engraved text-shadow.",
+      "Do render every quiet line, label, and caption as gold or parchment at reduced opacity, never a neutral gray. Section labels use ornament-label small-caps.",
+      "Do draw icons as inline SVG strokes (stroke=currentColor, ~1.6px), matching the lobby add/remove marks.",
+      "Do keep gem color paired with its text label (Diamond, Sapphire, Emerald, Ruby, Onyx, Gold) and use gem-red for errors — color alone never carries meaning.",
+      "Do honor prefers-reduced-motion (the global guard neutralizes rise-in, turn-breath, and all transitions)."
+    ],
+    "donts": [
+      "Don't use ring-glows or colored halos as a depth or emphasis cue. The only glows allowed are candlelight: the wordmark bloom and the active player's turn-breath.",
+      "Don't introduce neutral gray, or spend the six jewel colors on decoration/chrome — they belong to game pieces that mean that color, nothing else.",
+      "Don't use emoji or icon-font glyphs in the chrome. (The lock on a hidden reserve is the single deliberate exception, on a covered card back.)",
+      "Don't add ambient or looping animation beyond the one authored rise-in settle and the single turn-breath. Everything else stays instant.",
+      "Don't put running sentences in the serif, or set ceremonial titles/numbers in the sans — keep the serif/ceremony vs. sans/instruction split clean.",
+      "Don't ship a modal without its focus-trap, Escape-to-close, scroll-lock, and focus-restore; don't rely on hover-only affordances (mirror the press-and-hold peek with a visible label).",
+      "Don't treat the card and noble artwork as final — the card SVGs and noble JPGs under frontend/public/assets/ are placeholders slated for replacement; the pure-CSS card-face/parchment fallback must keep every piece legible without them."
+    ]
+  }
+}
