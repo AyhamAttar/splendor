@@ -12,7 +12,7 @@
 # Works as-is on Railway / Render (auto-detect this Dockerfile) and Fly.io
 # (`fly launch`). Set the environment variables listed in backend/DEPLOY.md.
 
-FROM node:20-bookworm-slim
+FROM node:22-bookworm-slim
 
 # Prisma's query engine needs OpenSSL at build (generate) and run time.
 RUN apt-get update \
