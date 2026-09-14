@@ -1,0 +1,55 @@
+# Production image for the Splendor Next.js frontend (@splendor/frontend).
+#
+# Like the backend image, the build context is the repo ROOT (the pnpm
+# workspace) so the `@splendor/engine` workspace dependency resolves exactly as
+# it does locally — the frontend imports it via `workspace:*` and Turbopack's
+# root is pinned to the workspace root (see frontend/next.config.ts).
+#
+#   docker build -f Dockerfile.frontend \
+#     --build-arg NEXT_PUBLIC_API_URL=https://your-backend.up.railway.app \
+#     -t splendor-frontend .
+#   docker run -p 3000:3000 splendor-frontend
+#
+# IMPORTANT: NEXT_PUBLIC_API_URL is inlined into the client bundle at BUILD time
+# (Next.js hardcodes NEXT_PUBLIC_* during `next build`). It MUST be passed as a
+# build argument — setting it only at runtime has no effect on the browser code.
+
+FROM node:22-bookworm-slim
+
+ENV PNPM_HOME=/pnpm
+ENV PATH="/pnpm:$PATH"
+RUN corepack enable
+
+WORKDIR /repo
+
+# 1) Install the full workspace graph. Copy every manifest first so
+#    `--frozen-lockfile` can validate the lockfile and Docker can cache the
+#    install layer across source-only changes.
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+COPY packages/engine/package.json packages/engine/
+COPY backend/package.json backend/
+COPY frontend/package.json frontend/
+RUN pnpm install --frozen-lockfile
+
+# 2) Copy the sources the frontend build needs (engine + frontend only; the
+#    backend is deployed as a separate service).
+COPY packages/engine packages/engine
+COPY frontend frontend
+
+# 3) The public API URL must be present BEFORE `next build` so it is baked into
+#    the client bundle. Railway/CLI supply it via --build-arg.
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+
+# 4) Build: compiles @splendor/engine, then runs `next build`.
+#    (See the frontend `build` script — it chains both.)
+RUN pnpm --filter @splendor/frontend build
+
+WORKDIR /repo/frontend
+
+ENV NODE_ENV=production
+
+# Next.js listens on 3000 by default; platforms inject their own PORT, so bind
+# to it when present and fall back to 3000 for local `docker run`.
+EXPOSE 3000
+CMD ["sh", "-c", "pnpm exec next start -p ${PORT:-3000}"]

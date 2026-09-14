@@ -49,18 +49,20 @@ Without Docker you can instead use native build/start commands (verified):
 - Build: `pnpm --filter @splendor/backend build`
 - Start: `pnpm --filter @splendor/backend start:prod`
 
-## 4. Point the frontend at the backend (on Vercel)
+## 4. Point the frontend at the backend
 
-Set on the Vercel **frontend** project and redeploy:
+The frontend is deployed as its own service — see
+[`frontend/DEPLOY-RAILWAY.md`](../frontend/DEPLOY-RAILWAY.md) for the Railway
+setup (it also works on Vercel). Wherever it runs, set:
 
 ```
 NEXT_PUBLIC_API_URL = https://<your-backend-host>
 ```
 
 This one variable drives both REST and the Socket.IO connection
-(`frontend/src/lib/{api,auth,realtime}.ts`). Then add that backend host's
-frontend origin to `CORS_ORIGINS` above so browsers are allowed through.
+(`frontend/src/lib/{api,auth,realtime}.ts`). Note it is inlined at **build
+time**, so changing it requires a frontend rebuild. Then add the frontend's
+origin to `CORS_ORIGINS` above so browsers are allowed through.
 
-> The old root `vercel.json` routed `/api/backend` to a Vercel "service" — that
-> approach is dead now that the backend lives elsewhere. The frontend calls
-> `NEXT_PUBLIC_API_URL` directly, so that rewrite is unused and can be removed.
+> The old root `vercel.json` (which routed `/api/backend` to a Vercel "service")
+> has been removed — the frontend now calls `NEXT_PUBLIC_API_URL` directly.
