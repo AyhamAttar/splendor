@@ -23,9 +23,13 @@ async function bootstrap() {
   configureApp(app, config);
 
   const port = Number(config.get("PORT")) || 4000;
-  await app.listen(port);
+  // Bind to 0.0.0.0 so the container is reachable from the platform's router
+  // (Railway/Render/Fly). Without an explicit host Nest binds the IPv6 wildcard
+  // "::", which some proxies can't reach — surfacing as "Application failed to
+  // respond" even though the process is up.
+  await app.listen(port, "0.0.0.0");
   // eslint-disable-next-line no-console
-  console.log(`Splendor API listening on http://localhost:${port}`);
+  console.log(`Splendor API listening on http://0.0.0.0:${port}`);
 }
 
 void bootstrap();

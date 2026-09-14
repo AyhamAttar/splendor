@@ -49,7 +49,8 @@ WORKDIR /repo/frontend
 
 ENV NODE_ENV=production
 
-# Next.js listens on 3000 by default; platforms inject their own PORT, so bind
-# to it when present and fall back to 3000 for local `docker run`.
-EXPOSE 3000
-CMD ["sh", "-c", "pnpm exec next start -p ${PORT:-3000}"]
+# Railway injects PORT (typically 8080); bind to it when present and fall back to
+# 8080 for local `docker run`. EXPOSE documents the same port so the platform's
+# target-port detection matches what the app actually listens on.
+EXPOSE 8080
+CMD ["sh", "-c", "pnpm exec next start -p ${PORT:-8080}"]
